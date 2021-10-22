@@ -1,5 +1,6 @@
 import argparse
 import os
+import matplotlib.pyplot as plt
 
 #lsfjalsdghlksghklghsaklghsadklghas fkldwgasglasgjslkfjsfklas 
 
@@ -32,6 +33,10 @@ def main():
 
     # Initalize dataset and model. Then train the model!
     train_dataset = StartingDataset()
+    image, label = train_dataset[0]
+    plt.imshow(image) # loads it into an object, and .show() shows everything you have
+    plt.show() 
+    print('Label:', label)
     val_dataset = StartingDataset()
     model = StartingNetwork()
     starting_train(

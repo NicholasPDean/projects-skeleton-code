@@ -1,5 +1,8 @@
 import torch
-
+from PIL import Image
+import matplotlib.pyplot as plt
+import pandas as pd
+import torchvision
 
 class StartingDataset(torch.utils.data.Dataset):
     """
@@ -7,13 +10,22 @@ class StartingDataset(torch.utils.data.Dataset):
     """
 
     def __init__(self):
+        self.train = pd.read_csv('cassava-leaf-disease-classification/train.csv')
         pass
 
     def __getitem__(self, index):
-        inputs = torch.zeros([3, 224, 224])
-        label = 0
+        # use pandas to open the image you want 
+        image_id, image_label = self.train.iloc[index] # use iloc when indexing
+        file_path = 'cassava-leaf-disease-classification/train_images/' + image_id
+        image = Image.open(file_path)
+        image = image.resize((224, 224))
+        convert_tensor = torchvision.transforms.ToTensor() # convert from pillow to tensor
+        convert_tensor(image)
+
+        inputs = image
+        label = image_label
 
         return inputs, label
 
     def __len__(self):
-        return 10000
+        return len(self.train) # return length of dataset

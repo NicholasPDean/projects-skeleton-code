@@ -2,7 +2,6 @@ import argparse
 import os
 import matplotlib.pyplot as plt
 
-#lsfjalsdghlksghklghsaklghsadklghas fkldwgasglasgjslkfjsfklas 
 
 import constants
 from datasets.StartingDataset import StartingDataset

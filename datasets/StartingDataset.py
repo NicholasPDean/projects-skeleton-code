@@ -18,7 +18,7 @@ class StartingDataset(torch.utils.data.Dataset):
         image_id, image_label = self.train.iloc[index] # use iloc when indexing
         file_path = 'cassava-leaf-disease-classification/train_images/' + image_id
         image = Image.open(file_path)
-        image = image.resize((224, 224))
+        image = image.resize((64, 64))
         convert_tensor = torchvision.transforms.ToTensor() # convert from pillow to tensor
         convert_tensor(image)
 

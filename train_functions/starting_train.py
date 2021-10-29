@@ -1,3 +1,4 @@
+from networks.StartingNetwork import StartingNetwork
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -47,14 +48,24 @@ def starting_train(
             print(f"\rIteration {i + 1} of {len(train_loader)} ...", end="")
 
             # TODO: Backpropagation and gradient descent
+            images, labels = batch
+
+            outputs = model.forward(images)
+            loss = loss_fn(outputs, labels)
+
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
 
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 0:
                 # TODO:
                 # Compute training loss and accuracy.
+                accuracy = compute_accuracy(outputs, labels)
                 # Log the results to Tensorboard.
-
-                # TODO:
+                
+            
+                # TODO: split the dataset into training and validation: https://pytorch.org/docs/stable/data.html#torch.utils.data.random_split
                 # Compute validation loss and accuracy.
                 # Log the results to Tensorboard.
                 # Don't forget to turn off gradient calculations!
@@ -76,8 +87,9 @@ def compute_accuracy(outputs, labels):
     Example output:
         0.75
     """
-
-    n_correct = (torch.round(outputs) == labels).sum().item()
+    
+    n_correct = (outputs.argmax(dim=1) == labels).sum().item()
+    print("n_corrrect: ", n_correct) # just for debugging, delete later
     n_total = len(outputs)
     return n_correct / n_total
 
@@ -88,4 +100,7 @@ def evaluate(val_loader, model, loss_fn):
 
     TODO!
     """
+
+    
+
     pass

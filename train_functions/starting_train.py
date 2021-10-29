@@ -45,7 +45,7 @@ def starting_train(
 
         # Loop over each batch in the dataset
         for i, batch in enumerate(train_loader):
-            print(f"\rIteration {i + 1} of {len(train_loader)} ...", end="")
+            print(f"\rIteration {i + 1} of {len(train_loader)} for training loop...", end="")
 
             # TODO: Backpropagation and gradient descent
             images, labels = batch
@@ -61,11 +61,12 @@ def starting_train(
             if step % n_eval == 0:
                 # TODO:
                 # Compute training loss and accuracy.
-                accuracy = compute_accuracy(outputs, labels)
+                train_accuracy = compute_accuracy(outputs, labels)
+                print('Training accuracy: ' + str(train_accuracy))
                 # Log the results to Tensorboard.
                 
-            
-                # TODO: split the dataset into training and validation: https://pytorch.org/docs/stable/data.html#torch.utils.data.random_split
+                # TODO: split the dataset into training and validation: (we did the splitting in main.py)
+                # 80% training, 20% validation
                 # Compute validation loss and accuracy.
                 # Log the results to Tensorboard.
                 # Don't forget to turn off gradient calculations!
@@ -100,7 +101,15 @@ def evaluate(val_loader, model, loss_fn):
 
     TODO!
     """
+    model.eval()
+    with torch.no_grad():
+        for i, batch in enumerate(val_loader):
+            print(f"\rIteration {i + 1} of {len(val_loader)} for validation loop...", end="")
 
+            images, labels = batch
+
+            outputs = model.forward(images)
+            print('Validation accuracy: ' + str(compute_accuracy(outputs, labels)))
     
-
+    model.train()
     pass

@@ -1,16 +1,14 @@
 import argparse
 import os
 import matplotlib.pyplot as plt
-
+import torch
 
 import constants
 from datasets.StartingDataset import StartingDataset
 from networks.StartingNetwork import StartingNetwork
 from train_functions.starting_train import starting_train
 
-
 SUMMARIES_PATH = "training_summaries"
-
 
 def main():
     # Get command line arguments
@@ -31,12 +29,12 @@ def main():
     print("Batch size:", args.batch_size)
 
     # Initalize dataset and model. Then train the model!
-    train_dataset = StartingDataset()
+    dataset = StartingDataset()
+    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [round(0.8*dataset.__len__()), round(0.2*dataset.__len__())])
     image, label = train_dataset[0]
-    plt.imshow(image) # loads it into an object, and .show() shows everything you have
-    plt.show() 
-    print('Label:', label)
-    val_dataset = StartingDataset()
+    # plt.imshow(image) # loads it into an object, and .show() shows everything you have
+    # plt.show() 
+    # print('Label:', label)
     model = StartingNetwork()
     starting_train(
         train_dataset=train_dataset,

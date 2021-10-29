@@ -1,4 +1,4 @@
-import torch
+import torch    
 from PIL import Image
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -20,7 +20,7 @@ class StartingDataset(torch.utils.data.Dataset):
         image = Image.open(file_path)
         image = image.resize((64, 64))
         convert_tensor = torchvision.transforms.ToTensor() # convert from pillow to tensor
-        convert_tensor(image)
+        image = convert_tensor(image)
 
         inputs = image
         label = image_label

@@ -2,7 +2,9 @@ from networks.StartingNetwork import StartingNetwork
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.utils.tensorboard
+import torch.utils.tensorboard 
+from tqdm import tqdm as tqdm
+import os
 
 
 def starting_train(
@@ -37,32 +39,39 @@ def starting_train(
 
     # Initialize summary writer (for logging)
     if summary_path is not None:
-        writer = torch.utils.tensorboard.SummaryWriter(summary_path)
+        writer = torch.utils.tensorboard.SummaryWriter(summary_path)    
 
     step = 0
     for epoch in range(epochs):
-        print(f"Epoch {epoch + 1} of {epochs}")
+        #print(f"Epoch {epoch + 1} of {epochs}")
+
+        loss_sum = 0
+        validate_runs = 0
 
         # Loop over each batch in the dataset
-        for i, batch in enumerate(train_loader):
-            print(f"\rIteration {i + 1} of {len(train_loader)} for training loop...", end="")
+        loop = tqdm(train_loader, desc=f"Train {epoch}")
+        for batch in loop:
+            #print(f"\rIteration {i + 1} of {len(train_loader)} for training loop...", end="")
 
             # TODO: Backpropagation and gradient descent
             images, labels = batch
 
             outputs = model.forward(images)
+            
             loss = loss_fn(outputs, labels)
-
+            
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
+
+            loss_sum += loss.item()
 
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 0:
                 # TODO:
                 # Compute training loss and accuracy.
-                train_accuracy = compute_accuracy(outputs, labels)
-                print('Training accuracy: ' + str(train_accuracy))
+
+                #print('Training accuracy: ' + str(train_accuracy))
                 # Log the results to Tensorboard.
                 
                 # TODO: split the dataset into training and validation: (we did the splitting in main.py)
@@ -70,7 +79,13 @@ def starting_train(
                 # Compute validation loss and accuracy.
                 # Log the results to Tensorboard.
                 # Don't forget to turn off gradient calculations!
-                evaluate(val_loader, model, loss_fn)
+                evaluate(val_loader, model, loss_fn, validate_runs)
+                validate_runs += 1
+
+            train_accuracy = compute_accuracy(outputs, labels)
+
+            # update loop
+            loop.set_postfix({"acc:": f"{train_accuracy : .03f}", "loss:": f"{loss_sum / len(outputs) : .03f}"})
 
             step += 1
 
@@ -90,26 +105,28 @@ def compute_accuracy(outputs, labels):
     """
     
     n_correct = (outputs.argmax(dim=1) == labels).sum().item()
-    print("n_corrrect: ", n_correct) # just for debugging, delete later
+    #print("n_corrrect: ", n_correct) # just for debugging, delete later
     n_total = len(outputs)
     return n_correct / n_total
 
 
-def evaluate(val_loader, model, loss_fn):
+def evaluate(val_loader, model, loss_fn, validate_runs):
     """
     Computes the loss and accuracy of a model on the validation dataset.
 
     TODO!
     """
+    loss_sum = 0
     model.eval()
     with torch.no_grad():
-        for i, batch in enumerate(val_loader):
-            print(f"\rIteration {i + 1} of {len(val_loader)} for validation loop...", end="")
+        loop = tqdm(val_loader, desc=f"Valid {validate_runs}")
+        for batch in loop:
+            #print(f"\rIteration {i + 1} of {len(val_loader)} for validation loop...", end="")
 
             images, labels = batch
 
             outputs = model.forward(images)
-            print('Validation accuracy: ' + str(compute_accuracy(outputs, labels)))
-    
+            #print('Validation accuracy: ' + str(compute_accuracy(outputs, labels)))
+            loop.set_postfix({"acc:": f"{compute_accuracy(outputs, labels) : .03f}"})
     model.train()
     pass

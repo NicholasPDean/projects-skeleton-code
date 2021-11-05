@@ -17,8 +17,11 @@ def main():
 
     # Create path for training summaries
     summary_path = "training_summaries"
+
+    # previous code 
+    # summary_path = None
     # if args.logdir is not None:
-    #     summary_path = "training_summaries"
+    #     summary_path = f"{SUMMARIES_PATH}/{args.logdir}"
     #     os.makedirs(summary_path, exist_ok=True)
 
     # TODO: Add GPU support. This line of code might be helpful.

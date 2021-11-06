@@ -15,14 +15,10 @@ def main():
     args = parse_arguments()
     hyperparameters = {"epochs": args.epochs, "batch_size": args.batch_size}
 
-    # Create path for training summaries
-    summary_path = "training_summaries"
-
-    # previous code 
-    # summary_path = None
-    # if args.logdir is not None:
-    #     summary_path = f"{SUMMARIES_PATH}/{args.logdir}"
-    #     os.makedirs(summary_path, exist_ok=True)
+    summary_path = None
+    if args.logdir is not None:
+        summary_path = f"{SUMMARIES_PATH}/{args.logdir}"
+        os.makedirs(summary_path, exist_ok=True)
 
     # TODO: Add GPU support. This line of code might be helpful.
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

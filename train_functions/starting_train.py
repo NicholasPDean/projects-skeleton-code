@@ -41,23 +41,20 @@ def starting_train(
         writer = SummaryWriter(summary_path)    
 
     step = 0
+    validate_runs = 0
     best_val_acc = 0
     for epoch in range(epochs):
-        #print(f"Epoch {epoch + 1} of {epochs}")
-
         loss_sum = 0
-        validate_runs = 0
+        num_correct = 0
+        num_total = 0
 
         # Loop over each batch in the dataset
         loop = tqdm(train_loader, desc=f"Train {epoch}")
         for batch in loop:
-            #print(f"\rIteration {i + 1} of {len(train_loader)} for training loop...", end="")
+            # Backpropagation and gradient descent
 
-            # TODO: Backpropagation and gradient descent
             images, labels = batch
-
             outputs = model.forward(images)
-            
             loss = loss_fn(outputs, labels)
             
             loss.backward()
@@ -68,36 +65,33 @@ def starting_train(
 
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 50:
-                # TODO:
-                # Compute training loss and accuracy.
-
-                #print('Training accuracy: ' + str(train_accuracy))
-                # Log the results to Tensorboard.
-                
-                # TODO: split the dataset into training and validation: (we did the splitting in main.py)
-                # 80% training, 20% validation
-                # Compute validation loss and accuracy.
-                # Log the results to Tensorboard.
-                # Don't forget to turn off gradient calculations!
                 val_accuracy, val_loss = evaluate(val_loader, model, loss_fn, validate_runs)
                 best_val_acc = max(best_val_acc, val_accuracy)
 
-                writer.add_scalar('acc/test', val_accuracy, step)
-                writer.add_scalar('loss/test', val_loss, step)
-                writer.add_scalar('acc/best_test', best_val_acc, step)
+                writer.add_scalar('acc/val', val_accuracy, validate_runs)
+                writer.add_scalar('loss/val', val_loss, validate_runs)
+                writer.add_scalar('acc/best_val', best_val_acc, validate_runs)
+                writer.flush()
 
                 validate_runs += 1
 
-            train_accuracy = compute_accuracy(outputs, labels)
-            train_loss = loss_sum / len(outputs)
-            # update loop
-            loop.set_postfix({"acc:": f"{train_accuracy : .03f}", "loss:": f"{loss.item() : .03f}"})
-            writer.flush() 
+            # per batch accuracy
+            batch_accuracy, batch_correct, batch_total = compute_accuracy(outputs, labels)
 
+            num_correct += batch_correct
+            num_total += batch_total
+
+            # update tqdm string
+            loop.set_postfix({"acc:": f"{batch_accuracy : .03f}"})
+            
             step += 1
+        
+        train_accuracy = num_correct / num_total
+        train_loss = loss_sum / len(train_loader)
 
         writer.add_scalar('acc/train', train_accuracy, epoch)
-        writer.add_scalar('loss/train', train_loss, epoch) 
+        writer.add_scalar('loss/train', train_loss, epoch)
+        writer.flush()
 
         print()
 
@@ -114,34 +108,39 @@ def compute_accuracy(outputs, labels):
     Example output:
         0.75
     """
-    
     n_correct = (outputs.argmax(dim=1) == labels).sum().item()
-    #print("n_corrrect: ", n_correct) # just for debugging, delete later
     n_total = len(outputs)
-    return n_correct / n_total
-
+    return n_correct / n_total, n_correct, n_total
 
 def evaluate(val_loader, model, loss_fn, validate_runs):
     """
     Computes the loss and accuracy of a model on the validation dataset.
-
-    TODO!
     """
     loss_sum = 0
+    num_correct = 0
+    num_total = 0
+
     model.eval()
     with torch.no_grad():
         loop = tqdm(val_loader, desc=f"Valid {validate_runs}")
         for batch in loop:
-            #print(f"\rIteration {i + 1} of {len(val_loader)} for validation loop...", end="")
 
             images, labels = batch
-
             outputs = model.forward(images)
-
             loss = loss_fn(outputs, labels)
+
             loss_sum += loss.item()
-            validation_accuracy = compute_accuracy(outputs, labels)
-            #print('Validation accuracy: ' + str(compute_accuracy(outputs, labels)))
-            loop.set_postfix({"acc:": f"{validation_accuracy : .03f}", "loss:": f"{loss_sum / len(outputs) : .03f}"})
+
+            batch_accuracy, batch_correct, batch_total = compute_accuracy(outputs, labels)
+
+            num_correct += batch_correct
+            num_total += batch_total
+
+            loop.set_postfix({"acc:": f"{batch_accuracy : .03f}"})
+
     model.train()
-    return validation_accuracy, loss_sum / len(outputs)
+
+    validation_accuracy = num_correct / num_total
+    validation_loss = loss_sum / len(val_loader)
+
+    return validation_accuracy, validation_loss

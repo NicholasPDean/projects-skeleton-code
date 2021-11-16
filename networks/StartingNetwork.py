@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class StartingNetwork(torch.nn.Module):
     """
     Basic logistic regression on 224x224x3 images.
@@ -43,4 +42,3 @@ class StartingNetwork(torch.nn.Module):
         # No activation function at the end
         # nn.CrossEntropyLoss takes care of it for us
         return x
-

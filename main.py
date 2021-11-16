@@ -1,6 +1,7 @@
 import argparse
 import os
 import matplotlib.pyplot as plt
+from networks.ResNetwork import ResNetwork
 import torch
 
 import constants
@@ -30,11 +31,8 @@ def main():
     # Initalize dataset and model. Then train the model!
     dataset = StartingDataset()
     train_dataset, val_dataset = torch.utils.data.random_split(dataset, [round(0.8*dataset.__len__()), round(0.2*dataset.__len__())])
-    image, label = train_dataset[0]
-    # plt.imshow(image) # loads it into an object, and .show() shows everything you have
-    # plt.show() 
-    # print('Label:', label)
-    model = StartingNetwork()
+    #model = StartingNetwork()
+    model = ResNetwork()
     starting_train(
         train_dataset=train_dataset,
         val_dataset=val_dataset,

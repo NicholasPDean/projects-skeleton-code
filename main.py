@@ -7,6 +7,7 @@ import torch
 import constants
 from data.StartingDataset import StartingDataset
 from networks.StartingNetwork import StartingNetwork
+from networks.ResNetwork import ResNetwork
 from train_functions.starting_train import starting_train
 
 SUMMARIES_PATH = "training_summaries"

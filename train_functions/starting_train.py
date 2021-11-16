@@ -40,9 +40,8 @@ def starting_train(
     loss_fn = nn.CrossEntropyLoss()
 
     # Initialize summary writer (for logging)
-    name = time.ctime()
     if summary_path is not None:
-        writer = SummaryWriter(os.path.join(summary_path, name))    
+        writer = SummaryWriter(summary_path)    
 
     step = 0
     validate_runs = 0

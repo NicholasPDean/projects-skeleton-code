@@ -1,9 +1,12 @@
+from PIL.Image import LINEAR
 from networks.StartingNetwork import StartingNetwork
 import torch
 import torch.nn as nn
 import torch.optim as optim
+# tensorboard 
 from torch.utils.tensorboard import SummaryWriter as SummaryWriter
 from tqdm import tqdm as tqdm
+import time
 import os
 
 def starting_train(
@@ -37,8 +40,9 @@ def starting_train(
     loss_fn = nn.CrossEntropyLoss()
 
     # Initialize summary writer (for logging)
+    name = time.ctime()
     if summary_path is not None:
-        writer = SummaryWriter(summary_path)    
+        writer = SummaryWriter(os.path.join(summary_path, name))    
 
     step = 0
     best_val_acc = 0
@@ -67,7 +71,7 @@ def starting_train(
             loss_sum += loss.item()
 
             # Periodically evaluate our model + log to Tensorboard
-            if step % n_eval == 50:
+            #if step % n_eval == 50:
                 # TODO:
                 # Compute training loss and accuracy.
 
@@ -79,14 +83,7 @@ def starting_train(
                 # Compute validation loss and accuracy.
                 # Log the results to Tensorboard.
                 # Don't forget to turn off gradient calculations!
-                val_accuracy, val_loss = evaluate(val_loader, model, loss_fn, validate_runs)
-                best_val_acc = max(best_val_acc, val_accuracy)
 
-                writer.add_scalar('acc/test', val_accuracy, step)
-                writer.add_scalar('loss/test', val_loss, step)
-                writer.add_scalar('acc/best_test', best_val_acc, step)
-
-                validate_runs += 1
 
             train_accuracy = compute_accuracy(outputs, labels)
             train_loss = loss_sum / len(outputs)
@@ -96,6 +93,15 @@ def starting_train(
 
             step += 1
 
+        # go through the whole training loop first, and then validate
+        val_accuracy, val_loss = evaluate(val_loader, model, loss_fn, validate_runs)
+        best_val_acc = max(best_val_acc, val_accuracy)
+
+        writer.add_scalar('acc/val', val_accuracy, step)
+        writer.add_scalar('loss/val', val_loss, step)
+        writer.add_scalar('acc/best_val', best_val_acc, step)
+
+        validate_runs += 1
         writer.add_scalar('acc/train', train_accuracy, epoch)
         writer.add_scalar('loss/train', train_loss, epoch) 
 

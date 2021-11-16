@@ -10,8 +10,14 @@ class StartingDataset(torch.utils.data.Dataset):
     Dataset that contains 100000 3x224x224 black images (all zeros).
     """
 
-    def __init__(self):
-        self.train = pd.read_csv('cassava-leaf-disease-classification/train.csv')
+    def __init__(self, dataset_path = ""):
+        # choose the correct dataset path
+        if dataset_path == "kaggle":
+            self.train = pd.read_csv('REPLACE/train.csv')
+            self.file_path = 'REPLACE'
+        else:
+            self.train = pd.read_csv('cassava-leaf-disease-classification/train.csv')
+            self.file_path = 'cassava-leaf-disease-classification/train_images/'
         # remove all but 2500 healthy plant images to balance out the value counts
         # get a tensor of all the healthy images indices
         healthy_indices = self.train.index[self.train["label"] == 3].values
@@ -24,7 +30,7 @@ class StartingDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         # use pandas to open the image you want 
         image_id, image_label = self.train.iloc[index] # use iloc when indexing
-        file_path = 'cassava-leaf-disease-classification/train_images/' + image_id
+        file_path = self.file_path + image_id
         image = Image.open(file_path)
         image = image.resize((224, 224))
         convert_tensor = torchvision.transforms.ToTensor() # convert from pillow to tensor

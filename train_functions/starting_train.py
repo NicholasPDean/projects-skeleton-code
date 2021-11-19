@@ -10,7 +10,7 @@ import time
 import os
 
 def starting_train(
-    train_dataset, val_dataset, model, hyperparameters, n_eval, summary_path
+    train_dataset, val_dataset, model, hyperparameters, n_eval, summary_path, device 
 ):
     """
     Trains and evaluates a model.
@@ -59,6 +59,9 @@ def starting_train(
             images, labels = batch
             outputs = model.forward(images)
             loss = loss_fn(outputs, labels)
+
+            images = images.to(device)
+            labels = labels.to(device)
             
             loss.backward()
             optimizer.step()
@@ -68,7 +71,7 @@ def starting_train(
 
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 50:
-                val_accuracy, val_loss = evaluate(val_loader, model, loss_fn, validate_runs)
+                val_accuracy, val_loss = evaluate(val_loader, model, loss_fn, validate_runs, device)
                 best_val_acc = max(best_val_acc, val_accuracy)
 
                 writer.add_scalar('acc/val', val_accuracy, validate_runs)
@@ -115,7 +118,7 @@ def compute_accuracy(outputs, labels):
     n_total = len(outputs)
     return n_correct / n_total, n_correct, n_total
 
-def evaluate(val_loader, model, loss_fn, validate_runs):
+def evaluate(val_loader, model, loss_fn, validate_runs, device):
     """
     Computes the loss and accuracy of a model on the validation dataset.
     """
@@ -131,6 +134,9 @@ def evaluate(val_loader, model, loss_fn, validate_runs):
             images, labels = batch
             outputs = model.forward(images)
             loss = loss_fn(outputs, labels)
+
+            images = images.to(device)
+            labels = labels.to(device)
 
             loss_sum += loss.item()
 

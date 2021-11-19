@@ -13,7 +13,6 @@ class ResNetwork(nn.Module):
         self.newmodel = torch.nn.Sequential(*(list(self.model.children())[:-1])) # remove end of model
         # TODO: Double check the below 2048 input size
         self.fc = nn.Linear(512, 5)
-
         self.flatten = nn.Flatten() 
 
     def forward(self, x):

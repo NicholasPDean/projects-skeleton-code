@@ -9,10 +9,10 @@ class ResNetwork(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet50', pretrained=True)
+        self.model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet18', pretrained=True)
         self.newmodel = torch.nn.Sequential(*(list(self.model.children())[:-1])) # remove end of model
         # TODO: Double check the below 2048 input size
-        self.fc = nn.Linear(2048, 5)
+        self.fc = nn.Linear(512, 5)
 
         self.flatten = nn.Flatten() 
 
@@ -20,7 +20,6 @@ class ResNetwork(nn.Module):
         # freeze weights
         with torch.no_grad():
             features = self.newmodel(x)
-            print(features.size())
             features = self.flatten(features)
         prediction = self.fc(features)
         return prediction

@@ -13,8 +13,8 @@ class StartingDataset(torch.utils.data.Dataset):
     def __init__(self, dataset_path = ""):
         # choose the correct dataset path
         if dataset_path == "kaggle":
-            self.train = pd.read_csv('REPLACE/train.csv')
-            self.file_path = 'REPLACE'
+            self.train = pd.read_csv('/kaggle/input/cassava-leaf-disease-classification/train.csv')
+            self.file_path = '/kaggle/input/cassava-leaf-disease-classification/train_images/'
         else:
             self.train = pd.read_csv('cassava-leaf-disease-classification/train.csv')
             self.file_path = 'cassava-leaf-disease-classification/train_images/'

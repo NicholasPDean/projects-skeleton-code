@@ -57,11 +57,12 @@ def starting_train(
             # Backpropagation and gradient descent
 
             images, labels = batch
-            outputs = model.forward(images)
-            loss = loss_fn(outputs, labels)
 
             images = images.to(device)
             labels = labels.to(device)
+
+            outputs = model.forward(images)
+            loss = loss_fn(outputs, labels)
             
             loss.backward()
             optimizer.step()
@@ -132,11 +133,12 @@ def evaluate(val_loader, model, loss_fn, validate_runs, device):
         for batch in loop:
 
             images, labels = batch
-            outputs = model.forward(images)
-            loss = loss_fn(outputs, labels)
 
             images = images.to(device)
             labels = labels.to(device)
+
+            outputs = model.forward(images)
+            loss = loss_fn(outputs, labels)
 
             loss_sum += loss.item()
 

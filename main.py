@@ -16,6 +16,7 @@ def main():
     # Get command line arguments
     args = parse_arguments()
     hyperparameters = {"epochs": args.epochs, "batch_size": args.batch_size}
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     summary_path = None
     if args.logdir is not None:
@@ -34,6 +35,7 @@ def main():
     train_dataset, val_dataset = torch.utils.data.random_split(dataset, [round(0.8*dataset.__len__()), round(0.2*dataset.__len__())])
     #model = StartingNetwork()
     model = ResNetwork()
+    model = model.to(device)
     starting_train(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
@@ -41,6 +43,7 @@ def main():
         hyperparameters=hyperparameters,
         n_eval=args.n_eval,
         summary_path=summary_path,
+        device=device
     )
 
 

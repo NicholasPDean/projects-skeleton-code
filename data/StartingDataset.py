@@ -6,10 +6,6 @@ import torchvision
 import numpy as np
 
 class StartingDataset(torch.utils.data.Dataset):
-    """
-    Dataset that contains 100000 3x224x224 black images (all zeros).
-    """
-
     def __init__(self, dataset_path = ""):
         # choose the correct dataset path
         if dataset_path == "kaggle":
@@ -32,7 +28,7 @@ class StartingDataset(torch.utils.data.Dataset):
         image_id, image_label = self.train.iloc[index] # use iloc when indexing
         file_path = self.file_path + image_id
         image = Image.open(file_path)
-        image = image.resize((224, 224))
+        image = image.resize((448, 448))
         convert_tensor = torchvision.transforms.ToTensor() # convert from pillow to tensor
         image = convert_tensor(image)
 

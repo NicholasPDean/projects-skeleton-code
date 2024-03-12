@@ -1,4 +1,4 @@
-# ACM AI Projects Skeleton Code
+# CNN Classification of Cassava leaf images
 
 ## Overview
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-A convolutional neural network (CNN) built in PyTorch that is finetuned to achieve the higherst classification accuracy on a Kaggle dataset of Cassava leaf images.
+A convolutional neural network (CNN) built in PyTorch that is finetuned to achieve the highest classification accuracy on a Kaggle dataset of Cassava leaf images.
 
 ## Setup
 

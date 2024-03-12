@@ -1,5 +1,9 @@
 # ACM AI Projects Skeleton Code
 
+## Overview
+
+A convolutional neural network (CNN) built in PyTorch that is finetuned to achieve the higherst classification accuracy on a Kaggle dataset of Cassava leaf images.
+
 ## Setup
 
 1. Create a new conda environment.
